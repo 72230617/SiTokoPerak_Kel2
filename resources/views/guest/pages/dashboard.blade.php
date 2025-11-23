@@ -17,7 +17,15 @@
                     </div>
                     <div class="card-body text-center">
 
+<<<<<<< HEAD
                         <i class="fa fa-user-circle fa-5x text-muted mb-3"></i>
+=======
+                        @if (Auth::user()->profile_picture_path)
+                            <img src="{{ asset('storage/' . Auth::user()->profile_picture_path) }}" alt="Foto Profil" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
+                        @else
+                            <i class="fa fa-user-circle fa-5x text-muted mb-3"></i>
+                        @endif
+>>>>>>> hans
 
                         <h5 class="mb-0 fw-bold">{{ Auth::user()->name }}</h5>
 
@@ -104,7 +112,11 @@
     <!-- MODAL EDIT PROFIL -->
     <div class="modal fade" id="editProfile" tabindex="-1">
         <div class="modal-dialog">
+<<<<<<< HEAD
             <form action="{{ route('customer.profile.update') }}" method="POST">
+=======
+            <form action="{{ route('customer.profile.update') }}" method="POST" enctype="multipart/form-data">
+>>>>>>> hans
                 @csrf @method('PATCH')
 
                 <div class="modal-content">
@@ -114,6 +126,18 @@
                     </div>
 
                     <div class="modal-body">
+<<<<<<< HEAD
+=======
+                        <div class="mb-3 text-center">
+                            @if (Auth::user()->profile_picture_path)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_picture_path) }}" alt="Foto Profil" class="rounded-circle mb-2" width="80" height="80" style="object-fit: cover;">
+                            @else
+                                <i class="fa fa-user-circle fa-5x text-muted mb-2"></i>
+                            @endif
+                            <input type="file" name="profile_picture" class="form-control form-control-sm">
+                            <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah foto.</small>
+                        </div>
+>>>>>>> hans
                         <div class="mb-3">
                             <label>Nama Lengkap</label>
                             <input name="name" class="form-control" value="{{ Auth::user()->name }}" required>
@@ -140,4 +164,8 @@
         </div>
     </div>
 
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> hans

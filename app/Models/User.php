@@ -12,34 +12,39 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'role', // ➔ Tambahkan ini
-        'name',
-        'phone',
-        'address'
+        "username",
+        "email",
+        "password",
+        "role", // ➔ Tambahkan ini
+        "name",
+        "phone",
+        "address",
     ];
 
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role === "admin";
     }
     public function isUser()
     {
-        return $this->role === 'guest';
+        return $this->role === "guest";
     }
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    /**
+     * Get the reviews for the user.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    protected $hidden = ["password", "remember_token"];
 
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            "email_verified_at" => "datetime",
+            "password" => "hashed",
         ];
     }
 }

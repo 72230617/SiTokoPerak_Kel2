@@ -6,14 +6,12 @@
     box-sizing: border-box;
 }
 
-
 .cart-badge {
     top: -6px;
     right: -12px;
     font-size: 0.65rem;
     padding: 3px 6px;
 }
-
 
 body {
     line-height: 1.6;
@@ -1283,7 +1281,9 @@ div > .dropdown-menu {
 .footer-social a {
     color: #fff;
     font-size: 20px;
-    transition: transform 0.3s, color 0.3s;
+    transition:
+        transform 0.3s,
+        color 0.3s;
 }
 
 .footer-social a:hover {
@@ -1297,6 +1297,22 @@ div > .dropdown-menu {
     font-size: 13px;
     padding-top: 30px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Alert Toast */
+.custom-alert-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2a2a2a;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 30px;
+    z-index: 9999;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
 /* ===================== RESPONSIVE FIX ===================== */

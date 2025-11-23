@@ -10,23 +10,29 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create("carts", function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->unique()->constrained()->onDelete('cascade');
-            $table->string('session_id')->nullable()->unique();
+            $table
+                ->foreignId("user_id")
+                ->nullable()
+                ->unique()
+                ->constrained()
+                ->onDelete("cascade");
+            $table->string("session_id")->nullable()->unique();
             $table->timestamps();
         });
 
-        Schema::create('cart_items', function (Blueprint $table) {
+        Schema::create("cart_items", function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cart_id')->constrained()->onDelete('cascade');
-            $table->foreignId('produk_id')
-                ->constrained('produk') // pastikan menunjuk ke tabel 'produk'
-                ->onDelete('cascade');
-            $table->integer('quantity')->default(1);
+            $table->foreignId("cart_id")->constrained()->onDelete("cascade");
+            $table
+                ->foreignId("produk_id")
+                ->constrained("produk") // pastikan menunjuk ke tabel 'produk'
+                ->onDelete("cascade");
+            $table->integer("quantity")->default(1);
             $table->timestamps();
 
-            $table->unique(['cart_id', 'produk_id']);
+            $table->unique(["cart_id", "produk_id"]);
         });
     }
 
@@ -35,7 +41,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
-        Schema::dropIfExists('cart_items');
+        Schema::dropIfExists("cart_items");
+        Schema::dropIfExists("carts");
     }
 };

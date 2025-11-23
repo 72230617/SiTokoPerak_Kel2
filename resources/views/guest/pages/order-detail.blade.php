@@ -90,10 +90,22 @@
                             <p class="alert alert-info">{{ $order->notes }}</p>
                         @endif
 
+<<<<<<< HEAD
                         <div class="mt-4">
                             <a href="{{ route('customer.dashboard') }}" class="btn btn-secondary">
                                 Kembali ke Dashboard
                             </a>
+=======
+                        <div class="mt-4 d-flex justify-content-between">
+                            <a href="{{ route('customer.dashboard') }}" class="btn btn-secondary">
+                                Kembali ke Dashboard
+                            </a>
+                            @if ($order->status == 'selesai')
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewOrderModal">
+                                    Beri Ulasan
+                                </button>
+                            @endif
+>>>>>>> hans
                         </div>
 
                     </div>
@@ -103,4 +115,94 @@
         </div>
 
     </div>
+<<<<<<< HEAD
 @endsection
+=======
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewOrderModal" tabindex="-1" aria-labelledby="reviewOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewOrderModalLabel">Beri Ulasan untuk Pesanan #{{ $order->order_number }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('reviews.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        @foreach ($order->items as $index => $item)
+                            <div class="review-product-item mb-4">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ asset('storage/' . optional($item->produk->fotoProduk->first())->file_foto_produk) }}" width="60" height="60" class="rounded me-3" style="object-fit:cover;">
+                                    <h6>{{ $item->produk->nama_produk }}</h6>
+                                </div>
+                                <input type="hidden" name="reviews[{{ $index }}][produk_id]" value="{{ $item->produk_id }}">
+                                <div class="mt-2">
+                                    <label class="form-label">Rating Anda</label>
+                                    <div class="star-rating-modal" data-review-index="{{ $index }}">
+                                        <i class="fa fa-star-o" data-rating="1"></i>
+                                        <i class="fa fa-star-o" data-rating="2"></i>
+                                        <i class="fa fa-star-o" data-rating="3"></i>
+                                        <i class="fa fa-star-o" data-rating="4"></i>
+                                        <i class="fa fa-star-o" data-rating="5"></i>
+                                    </div>
+                                    <input type="hidden" name="reviews[{{ $index }}][rating]" id="rating-{{ $index }}" value="0" required>
+                                </div>
+                                <div class="mt-2">
+                                    <label for="komentar-{{ $index }}" class="form-label">Komentar Anda</label>
+                                    <textarea name="reviews[{{ $index }}][komentar]" id="komentar-{{ $index }}" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Kirim Ulasan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star-rating-modal .fa');
+
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function () {
+            const rating = this.dataset.rating;
+            const reviewIndex = this.parentElement.dataset.reviewIndex;
+            highlightStars(reviewIndex, rating);
+        });
+
+        star.addEventListener('mouseout', function () {
+            const reviewIndex = this.parentElement.dataset.reviewIndex;
+            const currentRating = document.getElementById('rating-' + reviewIndex).value;
+            highlightStars(reviewIndex, currentRating);
+        });
+
+        star.addEventListener('click', function () {
+            const rating = this.dataset.rating;
+            const reviewIndex = this.parentElement.dataset.reviewIndex;
+            document.getElementById('rating-' + reviewIndex).value = rating;
+        });
+    });
+
+    function highlightStars(reviewIndex, rating) {
+        const starsInItem = document.querySelectorAll(`.star-rating-modal[data-review-index="${reviewIndex}"] .fa`);
+        starsInItem.forEach(s => {
+            if (s.dataset.rating <= rating) {
+                s.classList.remove('fa-star-o');
+                s.classList.add('fa-star');
+            } else {
+                s.classList.remove('fa-star');
+                s.classList.add('fa-star-o');
+            }
+        });
+    }
+});
+</script>
+@endpush
+>>>>>>> hans

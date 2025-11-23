@@ -135,9 +135,11 @@
                             <form action="{{ route('cart.add', $produk->slug) }}" method="POST"
                                 onsubmit="this.querySelector('button').disabled = true;">
                                 @csrf
-                                <button type="submit" class="main-button add-cart-beauty">
-                                    <i class="fa fa-shopping-cart me-2"></i> Tambah ke Keranjang
-                                </button>
+                                    <button type="submit">
+                                        <a class="see-all-button btn">
+                                            <i class="fa fa-shopping-cart me-2"></i> Tambah ke Keranjang
+                                        </a>
+                                    </button>
                             </form>
 
 
@@ -155,18 +157,18 @@
         </div>
         <div class="container">
             <div class="row">
-                @foreach ($randomProduks as $produk)
+                @foreach ($randomProduks as $relatedProduk)
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="product-item">
-                            <a href="{{ route('guest-singleProduct', $produk->slug) }}">
+                            <a href="{{ route('guest-singleProduct', $relatedProduk->slug) }}">
                                 <div class="thumb">
-                                    <img src="{{ asset('storage/' . optional($produk->fotoProduk->first())->file_foto_produk) }}"
-                                        alt="{{ $produk->nama_produk }}"
+                                    <img src="{{ asset('storage/' . optional($relatedProduk->fotoProduk->first())->file_foto_produk) }}"
+                                        alt="{{ $relatedProduk->nama_produk }}"
                                         onerror="this.onerror=null;this.src='{{ asset('images/produk-default.jpg') }}';">
                                 </div>
                                 <div class="down-content">
-                                    <h4>{{ $produk->nama_produk }}</h4>
-                                    <span class="product-price">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
+                                    <h4>{{ $relatedProduk->nama_produk }}</h4>
+                                    <span class="product-price">Rp {{ number_format($relatedProduk->harga, 0, ',', '.') }}</span>
                                     <ul class="stars">
                                         @for ($i = 0; $i < 5; $i++)
                                             <li><i class="fa fa-star"></i></li>
@@ -183,6 +185,82 @@
             <div class="col-lg-12">
                 <div class="text-center mt-5">
                     <a href="{{ route('guest-katalog') }}" class="see-all-button btn">Lihat Semua</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Reviews and Rating Section --}}
+    <section class="section" id="reviews">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-heading">
+                        <h2>Ulasan dan Rating</h2>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="review-summary-container">
+                        <div class="rating-summary">
+                            <div class="average-rating">
+                                <span class="rating-value">{{ $produk->average_rating }}</span>
+                                <span class="rating-max"> dari 5</span>
+                            </div>
+                            <div class="stars-display">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= $produk->average_rating)
+                                        <i class="fa fa-star"></i>
+                                    @else
+                                        <i class="fa fa-star-o"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter-type="all">Semua</button>
+                            <button class="filter-btn" data-filter-type="rating" data-filter-value="5">5 Bintang ({{ $produk->rating_counts[5] ?? 0 }})</button>
+                            <button class="filter-btn" data-filter-type="rating" data-filter-value="4">4 Bintang ({{ $produk->rating_counts[4] ?? 0 }})</button>
+                            <button class="filter-btn" data-filter-type="rating" data-filter-value="3">3 Bintang ({{ $produk->rating_counts[3] ?? 0 }})</button>
+                            <button class="filter-btn" data-filter-type="rating" data-filter-value="2">2 Bintang ({{ $produk->rating_counts[2] ?? 0 }})</button>
+                            <button class="filter-btn" data-filter-type="rating" data-filter-value="1">1 Bintang ({{ $produk->rating_counts[1] ?? 0 }})</button>
+                            <button class="filter-btn" data-filter-type="comment" data-filter-value="true">Dengan Komentar ({{ $produk->reviews_with_comment_count }})</button>
+                            <button class="filter-btn" data-filter-type="media" data-filter-value="true">Dengan Media ({{ $produk->reviews_with_media_count }})</button>
+                        </div>
+                    </div>
+                    <div class="reviews-wrapper">
+                        @forelse ($reviews as $review)
+                            <div class="review-item" data-rating="{{ $review->rating }}" data-comment="{{ $review->komentar ? 'true' : 'false' }}" data-media="{{ $review->media->isNotEmpty() ? 'true' : 'false' }}">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name">{{ $review->user->name }}</span>
+                                    <span class="review-date">{{ $review->created_at->format('d M Y') }}</span>
+                                </div>
+                                <div class="review-rating">
+                                    @for ($i = 0; $i < $review->rating; $i++)
+                                        <i class="fa fa-star"></i>
+                                    @endfor
+                                    @for ($i = $review->rating; $i < 5; $i++)
+                                        <i class="fa fa-star-o"></i>
+                                    @endfor
+                                </div>
+                                <div class="review-comment">
+                                    <p>{{ $review->komentar }}</p>
+                                </div>
+                            </div>
+                        @empty
+                            <p>Belum ada ulasan untuk produk ini.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    @auth
+                        <button type="button" class="btn see-all-button" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                            Tulis Ulasan Anda
+                        </button>
+                    @else
+                        <p>Silahkan masuk untuk menulis ulasan <br><a href="{{ route('login') }}" class="see-all-button btn">Masuk</a></p>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -269,6 +347,34 @@
                     }).catch(err => console.error('Gagal menyalin:', err));
                 });
             }
+
+            // Review Filter Logic
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const reviewItems = document.querySelectorAll('.review-item');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Set active state
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filterType = this.dataset.filterType;
+                    const filterValue = this.dataset.filterValue;
+
+                    reviewItems.forEach(item => {
+                        if (filterType === 'all') {
+                            item.style.display = 'block';
+                        } else {
+                            const itemValue = item.dataset[filterType];
+                            if (itemValue === filterValue) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
         });
     </script>
 @endpush
