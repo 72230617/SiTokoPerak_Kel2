@@ -9,19 +9,13 @@ class ProdukViewController extends Controller
 {
     public function store(Request $request, $produkId)
     {
-        $sessionId = session()->getId();
-
-        // 1 baris per session per produk
-        ProdukView::firstOrCreate([
+        ProdukView::create([
             'produk_id' => $produkId,
-            'session_id' => $sessionId,
+            'session_id' => session()->getId(),
         ]);
-
-        $totalViews = ProdukView::where('produk_id', $produkId)->count();
 
         return response()->json([
             'success' => true,
-            'totalViews' => $totalViews,
         ]);
     }
 }

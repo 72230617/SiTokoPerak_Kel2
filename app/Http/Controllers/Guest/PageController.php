@@ -6,21 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\KategoriProduk;
 use App\Models\Produk;
 use App\Models\Usaha;
-use App\Models\ProdukView;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     public function index()
     {
+        $sessionId = session()->getId();
+
         // Kategori untuk carousel
         $kategoris = KategoriProduk::all();
 
-        // Produk terbaru + foto + jumlah like & view
+        // Produk terbaru (8 item) + info like/view + apakah sudah dilike oleh session ini
         $randomProduks = Produk::with('fotoProduk')
             ->withCount([
                 'likes as likes_count',
                 'views as views_count',
+            ])
+            ->withExists([
+                'likes as is_liked' => function ($q) use ($sessionId) {
+                    $q->where('session_id', $sessionId);
+                },
             ])
             ->latest()
             ->take(8)
@@ -34,6 +40,8 @@ class PageController extends Controller
 
     public function productsByCategory($slug)
     {
+        $sessionId = session()->getId();
+
         $kategori = KategoriProduk::where('slug', $slug)->firstOrFail();
 
         $produks = Produk::where('kategori_produk_id', $kategori->id)
@@ -41,6 +49,11 @@ class PageController extends Controller
             ->withCount([
                 'likes as likes_count',
                 'views as views_count',
+            ])
+            ->withExists([
+                'likes as is_liked' => function ($q) use ($sessionId) {
+                    $q->where('session_id', $sessionId);
+                },
             ])
             ->get();
 
@@ -52,13 +65,21 @@ class PageController extends Controller
 
     public function katalog(Request $request)
     {
+        // *** JANGAN DIUBAH – sesuai versi kamu yang sudah benar ***
+        $sessionId = session()->getId();
+
         $query = Produk::with('kategoriProduk', 'fotoProduk')
             ->withCount([
                 'likes as likes_count',
                 'views as views_count',
+            ])
+            ->withExists([
+                'likes as is_liked' => function ($q) use ($sessionId) {
+                    $q->where('session_id', $sessionId);
+                },
             ]);
 
-        // SEARCH
+        // ---------- SEARCH ----------
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -70,14 +91,14 @@ class PageController extends Controller
             });
         }
 
-        // FILTER KATEGORI
+        // ---------- FILTER KATEGORI ----------
         if ($request->filled('kategori')) {
             $query->whereHas('kategoriProduk', function ($q) use ($request) {
                 $q->where('slug', $request->kategori);
             });
         }
 
-        // FILTER USAHA
+        // ---------- FILTER USAHA ----------
         if ($request->filled('usaha')) {
             $query->whereHas('usahaProduk.usaha', function ($q) use ($request) {
                 $q->where('id', $request->usaha)
@@ -85,7 +106,7 @@ class PageController extends Controller
             });
         }
 
-        // FILTER HARGA
+        // ---------- FILTER HARGA ----------
         if ($request->filled('min_harga')) {
             $query->where('harga', '>=', $request->min_harga);
         }
@@ -93,7 +114,7 @@ class PageController extends Controller
             $query->where('harga', '<=', $request->max_harga);
         }
 
-        // SORTING
+        // ---------- SORT ----------
         $urutkan = $request->input('urutkan', 'terbaru');
         switch ($urutkan) {
             case 'harga-rendah':
@@ -103,8 +124,8 @@ class PageController extends Controller
                 $query->orderBy('harga', 'desc');
                 break;
             case 'populer':
-                // misal: berdasarkan view terbanyak
-                $query->orderBy('views_count', 'desc');
+                // contoh: urutkan by likes terbanyak
+                $query->orderBy('likes_count', 'desc');
                 break;
             default:
                 $query->latest();
@@ -122,27 +143,37 @@ class PageController extends Controller
 
     public function singleProduct($slug)
     {
-        $produk = Produk::with(['fotoProduk', 'reviews.user', 'reviews.media'])
+        $sessionId = session()->getId();
+
+        // Produk utama
+        $produk = Produk::with(['fotoProduk', 'usaha'])
             ->withCount([
                 'likes as likes_count',
                 'views as views_count',
             ])
+            ->withExists([
+                'likes as is_liked' => function ($q) use ($sessionId) {
+                    $q->where('session_id', $sessionId);
+                },
+            ])
             ->where('slug', $slug)
             ->firstOrFail();
 
-        // Catat view per session (unique per session)
-        $sessionId = session()->getId();
-        ProdukView::firstOrCreate([
-            'produk_id' => $produk->id,
-            'session_id' => $sessionId,
-        ]);
+        $reviews = $produk->reviews()
+            ->latest()
+            ->with('user', 'media')
+            ->get();
 
-        $reviews = $produk->reviews()->latest()->with('user', 'media')->get();
-
+        // Produk terkait
         $randomProduks = Produk::with('fotoProduk')
             ->withCount([
                 'likes as likes_count',
                 'views as views_count',
+            ])
+            ->withExists([
+                'likes as is_liked' => function ($q) use ($sessionId) {
+                    $q->where('session_id', $sessionId);
+                },
             ])
             ->where('id', '!=', $produk->id)
             ->inRandomOrder()

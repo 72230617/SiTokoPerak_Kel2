@@ -9,7 +9,7 @@ class ProdukLikeController extends Controller
 {
     public function toggleLike(Request $request, $produkId)
     {
-        $sessionId = session()->getId(); // identitas tamu
+        $sessionId = session()->getId();
 
         $existing = ProdukLike::where('produk_id', $produkId)
             ->where('session_id', $sessionId)
@@ -21,7 +21,7 @@ class ProdukLikeController extends Controller
             return response()->json([
                 'success' => true,
                 'liked' => false,
-                'totalLikes' => ProdukLike::where('produk_id', $produkId)->count()
+                'totalLikes' => ProdukLike::where('produk_id', $produkId)->count(),
             ]);
         }
 
@@ -33,7 +33,7 @@ class ProdukLikeController extends Controller
         return response()->json([
             'success' => true,
             'liked' => true,
-            'totalLikes' => ProdukLike::where('produk_id', $produkId)->count()
+            'totalLikes' => ProdukLike::where('produk_id', $produkId)->count(),
         ]);
     }
 }

@@ -176,10 +176,10 @@
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="product-item">
                             <div class="thumb">
-                                <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="img-link">
+                                <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="img-link btn-show"
+                                    data-id="{{ $produk->id }}">
                                     <img src="{{ asset('storage/' . (optional($produk->fotoProduk->first())->file_foto_produk ?? 'placeholder.jpg')) }}"
-                                        alt="{{ $produk->nama_produk }}"
-                                        onerror="this.onerror=null;this.src='{{ asset('images/produk-default.jpg') }}';">
+                                        alt="{{ $produk->nama_produk }}">
                                 </a>
 
                                 <div class="hover-content">
@@ -193,11 +193,10 @@
                                         <li>
                                             <button type="button" class="like-btn" data-id="{{ $produk->id }}">
                                                 <i
-                                                    class="fa fa-star star-icon {{ ($produk->likes_count ?? 0) > 0 ? 'active' : '' }}"></i>
+                                                    class="fa fa-star star-icon {{ $produk->is_liked ? 'active' : '' }}"></i>
                                             </button>
                                         </li>
                                         <li>
-                                            {{-- optional cart icon only --}}
                                             <button type="button" class="add-cart-btn" data-id="{{ $produk->id }}">
                                                 <i class="fa fa-shopping-cart"></i>
                                             </button>
@@ -207,19 +206,22 @@
                             </div>
 
                             <div class="down-content">
-                                <h4>{{ $produk->nama_produk }}</h4>
+                                <h4>
+                                    <a href="{{ route('guest-singleProduct', $produk->slug) }}">
+                                        {{ $produk->nama_produk }}
+                                    </a>
+                                </h4>
                                 <span class="product-price">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
-
                                 <ul class="stars">
                                     @for ($i = 0; $i < 5; $i++)
                                         <li><i class="fa fa-star"></i></li>
                                     @endfor
                                 </ul>
-
                                 <p class="product-reviews">
                                     {{ $produk->views_count ?? 0 }}x dilihat • {{ $produk->likes_count ?? 0 }} suka
                                 </p>
 
+                                {{-- Tombol add-to-cart lama --}}
                                 <form action="{{ route('cart.add', $produk->slug) }}" method="POST"
                                     onsubmit="this.querySelector('button').disabled = true;">
                                     @csrf
@@ -269,4 +271,67 @@
             }
         });
     </script>
+    <style>
+        .product-item .thumb,
+        .item .thumb {
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+
+        .product-item .hover-content,
+        .item .hover-content {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .2s ease, visibility .2s ease;
+            pointer-events: none;
+        }
+
+        .product-item:hover .hover-content,
+        .item:hover .hover-content {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .product-item .hover-content ul,
+        .item .hover-content ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .product-item .hover-content ul li,
+        .item .hover-content ul li {
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .product-item .hover-content a,
+        .product-item .hover-content button,
+        .item .hover-content a,
+        .item .hover-content button {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            color: #fff;
+        }
+
+        .star-icon {
+            transition: .2s ease;
+        }
+
+        .star-icon.active {
+            color: #ffc107 !important;
+        }
+    </style>
 @endpush

@@ -12,6 +12,7 @@ class ProdukLike extends Model
     protected $table = 'produk_likes';
 
     protected $fillable = ['produk_id', 'session_id'];
+
     public function produk()
     {
         return $this->belongsTo(Produk::class);

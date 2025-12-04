@@ -54,7 +54,7 @@ Route::post("/cart/clear", [CartController::class, "clear"])->name(
 );
 
 //Guest
-Route::get("", [PageController::class, "index"])->name("guest-index");
+Route::get("/", [PageController::class, "index"])->name("guest-index");
 Route::get("about", [PageController::class, "about"])->name("guest-about");
 Route::get("contact", [PageController::class, "contact"])->name(
     "guest-contact",
@@ -81,14 +81,8 @@ Route::get("produk/{slug}", [PageController::class, "singleProduct"])->name(
 );
 
 Route::post("logout", [AuthController::class, "logout"])->name("logout");
-// Like
-Route::post('/produk/{produk}/like', [ProdukLikeController::class, 'toggleLike'])
-    ->name('produk.like');
-
-// View
-Route::post('/produk/{produk}/view', [ProdukViewController::class, 'store'])
-    ->name('produk.view');
-
+Route::post('/produk/{produkId}/like', [ProdukLikeController::class, 'toggleLike']);
+Route::post('/produk/{produkId}/view', [ProdukViewController::class, 'store']);
 //Checkout
 Route::middleware("auth")->group(function () {
     Route::post("/reviews", [ReviewController::class, "store"])->name(

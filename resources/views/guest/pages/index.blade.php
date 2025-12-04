@@ -3,7 +3,7 @@
 
 @section('content')
 
-    {{-- ==================== HERO ==================== --}}
+    {{-- ==================== BANNER ==================== --}}
     <div class="main-banner" id="top">
         <div class="banner-background">
             <img src="{{ asset('assets/images/malioboro2.jpg') }}" alt="Keraton Yogyakarta"
@@ -31,7 +31,7 @@
             <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     @foreach ($kategoris->chunk(3) as $key => $chunk)
-                        <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
+                        <div class="carousel-item @if ($key == 0) active @endif">
                             <div class="row">
                                 @foreach ($chunk as $kategori)
                                     <div class="col-lg-4 col-md-6 mb-4">
@@ -81,19 +81,22 @@
 
         <div class="container">
             <div class="row">
-                @forelse ($randomProduks as $produk)
+                @foreach ($randomProduks as $produk)
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="product-item">
                             <div class="thumb">
-                                <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="img-link">
+                                {{-- Gambar (klik = view + pindah ke detail) --}}
+                                <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="img-link btn-show"
+                                    data-id="{{ $produk->id }}">
                                     <img src="{{ asset('storage/' . (optional($produk->fotoProduk->first())->file_foto_produk ?? 'placeholder.jpg')) }}"
                                         alt="{{ $produk->nama_produk }}"
                                         onerror="this.onerror=null;this.src='{{ asset('images/produk-default.jpg') }}';">
                                 </a>
 
+                                {{-- Overlay icon --}}
                                 <div class="hover-content">
                                     <ul>
-                                        {{-- SHOW / VIEW --}}
+                                        {{-- SHOW --}}
                                         <li>
                                             <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="btn-show"
                                                 data-id="{{ $produk->id }}">
@@ -105,11 +108,11 @@
                                         <li>
                                             <button type="button" class="like-btn" data-id="{{ $produk->id }}">
                                                 <i
-                                                    class="fa fa-star star-icon {{ ($produk->likes_count ?? 0) > 0 ? 'active' : '' }}"></i>
+                                                    class="fa fa-star star-icon {{ $produk->is_liked ? 'active' : '' }}"></i>
                                             </button>
                                         </li>
 
-                                        {{-- CART (kalau mau dipakai nanti) --}}
+                                        {{-- CART (sementara dummy) --}}
                                         <li>
                                             <button type="button" class="add-cart-btn" data-id="{{ $produk->id }}">
                                                 <i class="fa fa-shopping-cart"></i>
@@ -121,9 +124,7 @@
 
                             <div class="down-content">
                                 <h4>{{ $produk->nama_produk }}</h4>
-                                <span class="product-price">
-                                    Rp {{ number_format($produk->harga, 0, ',', '.') }}
-                                </span>
+                                <span class="product-price">Rp {{ number_format($produk->harga, 0, ',', '.') }}</span>
                                 <ul class="stars">
                                     @for ($i = 0; $i < 5; $i++)
                                         <li><i class="fa fa-star"></i></li>
@@ -135,24 +136,18 @@
                             </div>
                         </div>
                     </div>
-                @empty
-                    <div class="col-12 text-center">
-                        <p>Produk belum tersedia saat ini.</p>
-                    </div>
-                @endforelse
+                @endforeach
             </div>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="text-center mt-5">
-                        <a href="{{ route('guest-katalog') }}" class="see-all-button btn">Lihat Semua</a>
-                    </div>
+            <div class="col-lg-12">
+                <div class="text-center mt-5">
+                    <a href="{{ route('guest-katalog') }}" class="see-all-button btn">Lihat Semua</a>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- ==================== ABOUT SHORT ==================== --}}
+    {{-- ==================== ABOUT ==================== --}}
     <section class="about-us">
         <div class="container">
             <div class="row align-items-center">
@@ -165,11 +160,7 @@
                 <div class="col-lg-5 col-md-12">
                     <div class="about-content">
                         <h3>TekoPerakku</h3>
-                        <p>
-                            TekoPerakku menghadirkan kerajinan perak asli Kotagede dengan kualitas terbaik.
-                            Setiap karya diproses secara teliti oleh pengrajin berpengalaman untuk menjaga keaslian dan
-                            keindahan tradisi.
-                        </p>
+                        <p>TekoPerakku menghadirkan kerajinan perak asli Kotagede dengan kualitas terbaik...</p>
                         <a href="{{ route('guest-about') }}" class="btn btn-primary about-btn">Pelajari Lebih Lanjut</a>
                     </div>
                 </div>
@@ -177,7 +168,7 @@
         </div>
     </section>
 
-    {{-- ==================== CSS KHUSUS HOVER ==================== --}}
+    {{-- ==================== STYLE UNTUK ICON HOVER ==================== --}}
     <style>
         .product-item .thumb,
         .item .thumb {
@@ -195,13 +186,14 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity .2s ease, visibility .2s ease;
-            pointer-events: auto;
+            pointer-events: none;
         }
 
         .product-item:hover .hover-content,
         .item:hover .hover-content {
             opacity: 1;
             visibility: visible;
+            pointer-events: auto;
         }
 
         .product-item .hover-content ul,
@@ -246,7 +238,7 @@
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Scroll ke produk
+            // Scroll ke section produk
             const scrollBtn = document.querySelector('.scroll-to-produk');
             if (scrollBtn) {
                 scrollBtn.addEventListener('click', function(e) {
@@ -257,7 +249,7 @@
                 });
             }
 
-            // LIKE
+            // === LIKE ===
             document.querySelectorAll('.like-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -265,8 +257,8 @@
 
                     const productId = this.dataset.id;
                     const icon = this.querySelector('.star-icon');
-                    const infoText = this.closest('.product-item')
-                        ?.querySelector('.product-reviews');
+                    const card = this.closest('.product-item');
+                    const infoText = card?.querySelector('.product-reviews');
 
                     fetch(`/produk/${productId}/like`, {
                             method: 'POST',
@@ -287,49 +279,35 @@
                             }
 
                             if (infoText && typeof data.totalLikes !== 'undefined') {
-                                const parts = infoText.innerText.split('•');
-                                const viewsPart = parts[0] ?? '0x dilihat ';
-                                infoText.innerText = viewsPart.trim() + ' • ' + (data
-                                    .totalLikes ?? 0) + ' suka';
+                                const parts = infoText.textContent.split('•');
+                                const viewsPart = parts[0].trim(); // "0x dilihat"
+                                infoText.textContent = `${viewsPart} • ${data.totalLikes} suka`;
                             }
                         })
                         .catch(err => console.error(err));
                 });
             });
 
-            // VIEW lewat icon mata
+            // === VIEW (eye + klik gambar) ===
             document.querySelectorAll('.btn-show').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
 
                     const productId = this.dataset.id;
                     const url = this.getAttribute('href');
-                    const infoText = this.closest('.product-item')
-                        ?.querySelector('.product-reviews');
 
                     fetch(`/produk/${productId}/view`, {
-                            method: 'POST',
-                            credentials: 'same-origin',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({})
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (infoText && typeof data.totalViews !== 'undefined') {
-                                const parts = infoText.innerText.split('•');
-                                const likesPart = parts[1] ?? '0 suka';
-                                infoText.innerText = (data.totalViews ?? 0) + 'x dilihat • ' +
-                                    likesPart.trim();
-                            }
-                        })
-                        .catch(err => console.error(err))
-                        .finally(() => {
-                            window.location.href = url;
-                        });
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({})
+                    }).catch(err => console.error(err));
+
+                    window.location.href = url;
                 });
             });
         });

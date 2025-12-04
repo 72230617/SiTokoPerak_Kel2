@@ -11,7 +11,7 @@ class ProdukView extends Model
 
     protected $table = 'produk_views';
 
-    protected $fillable = ['produk_id', 'session_id', 'total_klik'];
+    protected $fillable = ['produk_id', 'session_id'];
 
     public function produk()
     {
