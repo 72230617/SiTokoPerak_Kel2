@@ -25,7 +25,8 @@
                         <h2 class="search-title">Hasil Pencarian</h2>
                         {{-- Menampilkan jumlah hasil dan kata kunci pencarian secara dinamis --}}
                         <p class="result-count">
-                            Menampilkan {{ $produks->firstItem() }} - {{ $produks->lastItem() }} dari {{ $produks->total() }}
+                            Menampilkan {{ $produks->firstItem() }} - {{ $produks->lastItem() }} dari
+                            {{ $produks->total() }}
                             hasil untuk "<span class="search-term">{{ request('search') }}</span>"
                         </p>
                     </div>
@@ -49,7 +50,8 @@
                                 <div class="dropdown">
                                     <button
                                         class="form-select-custom dropdown-toggle {{ request('kategori') ? 'filter-active' : '' }}"
-                                        type="button" id="kategoriDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        type="button" id="kategoriDropdown" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
                                         {{ $namaKategoriAktif }}
                                     </button>
                                     <div>
@@ -78,7 +80,7 @@
                                 <label for="harga-dropdown">Harga:</label>
                                 <div class="dropdown w-100">
                                     <button
-                                        class="btn-dropdown-custom {{ (request('min_harga') || request('max_harga')) ? 'filter-active' : '' }}"
+                                        class="btn-dropdown-custom {{ request('min_harga') || request('max_harga') ? 'filter-active' : '' }}"
                                         type="button" id="harga-dropdown" data-bs-toggle="dropdown"
                                         data-bs-auto-close="outside" aria-expanded="false">
                                         @if (request('min_harga') && request('max_harga'))
@@ -97,14 +99,16 @@
                                             <div class="price-inputs-wrapper">
                                                 <div class="price-input-group-new">
                                                     <label for="min_harga" class="price-label-new">Min</label>
-                                                    <input type="number" class="price-input" name="min_harga" id="min_harga"
-                                                        placeholder="100.000" value="{{ request('min_harga') }}">
+                                                    <input type="number" class="price-input" name="min_harga"
+                                                        id="min_harga" placeholder="100.000"
+                                                        value="{{ request('min_harga') }}">
                                                 </div>
                                                 <span class="price-separator">-</span>
                                                 <div class="price-input-group-new">
                                                     <label for="max_harga" class="price-label-new">Maks</label>
-                                                    <input type="number" class="price-input" name="max_harga" id="max_harga"
-                                                        placeholder="1.000.000" value="{{ request('max_harga') }}">
+                                                    <input type="number" class="price-input" name="max_harga"
+                                                        id="max_harga" placeholder="1.000.000"
+                                                        value="{{ request('max_harga') }}">
                                                 </div>
                                             </div>
 
@@ -121,8 +125,8 @@
                                                 <button type="submit" class="btn-apply-new">Terapkan</button>
 
                                                 {{-- Tombol Reset menggunakan link (<a>) untuk menghapus parameter URL --}}
-                                                    <a href="{{ url()->current() }}?{{ http_build_query(request()->except(['min_harga', 'max_harga'])) }}"
-                                                        class="btn-reset-new">Reset</a>
+                                                <a href="{{ url()->current() }}?{{ http_build_query(request()->except(['min_harga', 'max_harga'])) }}"
+                                                    class="btn-reset-new">Reset</a>
                                             </div>
                                         </div>
                                     </div>
@@ -171,13 +175,36 @@
                 @forelse ($produks as $produk)
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="product-item">
-                            <a href="{{ route('guest-singleProduct', $produk->slug) }}">
-                                <div class="thumb">
-                                    <img src="{{ asset('storage/' . optional($produk->fotoProduk->first())->file_foto_produk) }}"
+                            <div class="thumb">
+                                <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="img-link">
+                                    <img src="{{ asset('storage/' . (optional($produk->fotoProduk->first())->file_foto_produk ?? 'placeholder.jpg')) }}"
                                         alt="{{ $produk->nama_produk }}"
                                         onerror="this.onerror=null;this.src='{{ asset('images/produk-default.jpg') }}';">
+                                </a>
+
+                                <div class="hover-content">
+                                    <ul>
+                                        <li>
+                                            <a href="{{ route('guest-singleProduct', $produk->slug) }}" class="btn-show"
+                                                data-id="{{ $produk->id }}">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="like-btn" data-id="{{ $produk->id }}">
+                                                <i
+                                                    class="fa fa-star star-icon {{ ($produk->likes_count ?? 0) > 0 ? 'active' : '' }}"></i>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            {{-- optional cart icon only --}}
+                                            <button type="button" class="add-cart-btn" data-id="{{ $produk->id }}">
+                                                <i class="fa fa-shopping-cart"></i>
+                                            </button>
+                                        </li>
+                                    </ul>
                                 </div>
-                            </a>
+                            </div>
 
                             <div class="down-content">
                                 <h4>{{ $produk->nama_produk }}</h4>
@@ -189,12 +216,12 @@
                                     @endfor
                                 </ul>
 
-                                <p class="product-reviews">20 Reviews</p>
+                                <p class="product-reviews">
+                                    {{ $produk->views_count ?? 0 }}x dilihat • {{ $produk->likes_count ?? 0 }} suka
+                                </p>
 
-                                <!-- ✅ Add to Cart Button HERE -->
                                 <form action="{{ route('cart.add', $produk->slug) }}" method="POST"
                                     onsubmit="this.querySelector('button').disabled = true;">
-
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-primary w-100">
                                         <i class="fa fa-shopping-cart"></i> Tambah
@@ -204,12 +231,12 @@
                         </div>
                     </div>
                 @empty
-                    {{-- Pesan jika tidak ada produk yang ditemukan --}}
                     <div class="col-12 text-center">
                         <p>Produk tidak ditemukan.</p>
                     </div>
                 @endforelse
             </div>
+
 
             {{-- Bagian Paginasi Baru --}}
             <div class="row mt-4">
@@ -226,7 +253,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Cari form spesifik yang berisi filter
             const filterForm = document.querySelector('form[action="{{ route('guest-katalog') }}"]');
 
@@ -234,8 +261,8 @@
             if (filterForm) {
                 const filters = filterForm.querySelectorAll('select');
 
-                filters.forEach(function (select) {
-                    select.addEventListener('change', function () {
+                filters.forEach(function(select) {
+                    select.addEventListener('change', function() {
                         filterForm.submit();
                     });
                 });

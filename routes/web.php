@@ -20,7 +20,10 @@ use App\Http\Controllers\Guest\CartController;
 use App\Http\Controllers\Guest\CheckoutController;
 use App\Http\Controllers\Guest\CustomerDashboardController;
 use App\Http\Controllers\Guest\ReviewController;
+use App\Http\Controllers\ProdukLikeController;
+use App\Http\Controllers\ProdukViewController;
 use App\Http\Controllers\Admin\LaporanUsahaController;
+
 
 
 // Authentication Routes
@@ -78,6 +81,13 @@ Route::get("produk/{slug}", [PageController::class, "singleProduct"])->name(
 );
 
 Route::post("logout", [AuthController::class, "logout"])->name("logout");
+// Like
+Route::post('/produk/{produk}/like', [ProdukLikeController::class, 'toggleLike'])
+    ->name('produk.like');
+
+// View
+Route::post('/produk/{produk}/view', [ProdukViewController::class, 'store'])
+    ->name('produk.view');
 
 //Checkout
 Route::middleware("auth")->group(function () {
@@ -106,7 +116,7 @@ Route::middleware('auth')->group(function () {
 //buat Dashboard customer
 Route::middleware('auth')->name('customer.')->group(function () {
 
-    // Dashboard Home → /customer/dashboard 
+    // Dashboard Home → /customer/dashboard
     Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])
         ->name('dashboard');
     // Detail pesanan → /customer/orders/123

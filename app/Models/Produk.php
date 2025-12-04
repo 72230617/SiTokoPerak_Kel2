@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Produk extends Model
 {
@@ -119,5 +120,16 @@ class Produk extends Model
     public function getReviewsWithMediaCountAttribute()
     {
         return $this->reviews()->whereHas("media")->count();
+    }
+    // Relasi ke view
+    public function views()
+    {
+        return $this->hasMany(ProdukView::class, 'produk_id');
+    }
+
+    // ⭐ FIX: Relasi ke likes (WAJIB NAMA likes)
+    public function likes()
+    {
+        return $this->hasMany(ProdukLike::class, 'produk_id');
     }
 }
