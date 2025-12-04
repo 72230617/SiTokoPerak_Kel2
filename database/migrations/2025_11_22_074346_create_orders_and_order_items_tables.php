@@ -26,6 +26,10 @@ return new class extends Migration {
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             // di project kamu tabelnya "produk", bukan "produks"
             $table->foreignId('produk_id')->constrained('produk')->onDelete('cascade');
+            $table->unsignedBigInteger('usaha_produk_id')->nullable();
+            $table->foreign('usaha_produk_id')
+                ->references('id')->on('usaha_produk')
+                ->onDelete('set null');
             $table->integer('quantity');
             $table->bigInteger('price_at_purchase'); // harga saat dibeli
             $table->timestamps();
