@@ -23,4 +23,8 @@ class UsahaProduk extends Model
     {
         return $this->belongsTo(Produk::class, 'produk_id');
     }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

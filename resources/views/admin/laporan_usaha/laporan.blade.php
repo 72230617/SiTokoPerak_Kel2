@@ -91,18 +91,18 @@
 
 @section('content')
 
-    {{-- NAVIGASI --}}
-    <div class="report-nav">
-        <a href="{{ route('admin.laporan.index') }}" class="active">📌 Dashboard Laporan</a>
-        <a href="{{ route('admin.laporan.transaksi') }}">📄 Semua Transaksi</a>
-        <a href="{{ route('admin.laporan.pendapatan_usaha') }}">💰 Pendapatan Per Usaha</a>
-        <a href="{{ route('admin.laporan.produk_terlaris') }}">🔥 Produk Terlaris</a>
-        <a href="{{ route('admin.laporan.produk-slow-moving') }}">🐌 Produk Slow Moving</a>
-        <a href="{{ route('admin.laporan.transaksi-user') }}">👥 Transaksi Per User</a>
-        <a href="{{ route('admin.laporan.kategori-produk') }}">📦 Kategori Produk</a>
-        <a href="{{ route('admin.laporan.produk-favorite') }}">❤️ Produk Favorite</a>
-        <a href="{{ route('admin.laporan.produk-views') }}">👁️ Produk Dilihat</a>
-    </div>
+<div class="report-nav">
+    <a href="{{ route('admin.laporan.index') }}" class="active">📌 Dashboard Laporan</a>
+    <a href="{{ route('admin.laporan.transaksi') }}">📄 Semua Transaksi</a>
+    <a href="{{ route('admin.laporan.pendapatan_usaha') }}">💰 Pendapatan Per Usaha</a>
+    <a href="{{ route('admin.laporan.produk_terlaris') }}">🔥 Produk Terlaris</a>
+    <a href="{{ route('admin.laporan.produk-slow-moving') }}">🐌 Produk Slow Moving</a>
+    <a href="{{ route('admin.laporan.transaksi-user') }}">👥 Transaksi Per User</a>
+    <a href="{{ route('admin.laporan.kategori-produk') }}">📦 Kategori Produk</a>
+    <a href="{{ route('admin.laporan.produk-favorite') }}">❤️ Produk Favorite</a>
+    <a href="{{ route('admin.laporan.produk-views') }}">👁️ Produk Dilihat</a>
+</div>
+
 
     {{-- FILTER GLOBAL + EXPORT --}}
     <div class="card-modern">
@@ -180,14 +180,14 @@
                     <a href="{{ route('admin.laporan.index') }}" class="btn btn-secondary btn-block mb-2">
                         <i class="fa fa-sync-alt"></i> Reset
                     </a>
-                    <a href="{{ route('admin.laporan.export.pdf', request()->all()) }}"
+                    {{-- <a href="{{ route('admin.laporan.export.pdf', request()->all()) }}"
                         class="btn btn-danger btn-block mb-2" target="_blank">
                         <i class="fa fa-file-pdf"></i> PDF
                     </a>
                     <a href="{{ route('admin.laporan.export.excel', request()->all()) }}" class="btn btn-success btn-block"
                         target="_blank">
                         <i class="fa fa-file-excel"></i> Excel
-                    </a>
+                    </a> --}}
                 </div>
             </div>
         </form>

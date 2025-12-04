@@ -400,7 +400,23 @@ Route::middleware(["role:admin"])->group(function () {
         // DASHBOARD LAPORAN USAHA
         Route::get('/laporan-usaha', [LaporanUsahaController::class, 'index'])
             ->name('laporan.index'); // -> admin.laporan.index
-
+            // ====================================================
+        // LAPORAN
+        // ====================================================
+        Route::prefix('admin/laporan_usaha')
+    ->name('admin.laporan.')
+    ->middleware(['web', 'role:admin'])
+    ->group(function () {
+        Route::get('/', [LaporanUsahaController::class, 'index'])->name('index');
+        Route::get('/transaksi', [LaporanUsahaController::class, 'transaksi'])->name('transaksi');
+        Route::get('/pendapatan-usaha', [LaporanUsahaController::class, 'pendapatanUsaha'])->name('pendapatan-usaha');
+        Route::get('/produk-terlaris', [LaporanUsahaController::class, 'produkTerlaris'])->name('produk-terlaris');
+        Route::get('/produk-slow-moving', [LaporanUsahaController::class, 'produkSlowMoving'])->name('produk-slow-moving');
+        Route::get('/transaksi-user', [LaporanUsahaController::class, 'transaksiUser'])->name('transaksi-user');
+        Route::get('/kategori-produk', [LaporanUsahaController::class, 'kategoriProduk'])->name('kategori-produk');
+        Route::get('/produk-favorite', [LaporanUsahaController::class, 'produkFavorite'])->name('produk-favorite');
+        Route::get('/produk-views', [LaporanUsahaController::class, 'produkViews'])->name('produk-views');
+    });
         // TRANSAKSI
         Route::get('/laporan-usaha/transaksi', [LaporanUsahaController::class, 'transaksi'])
             ->name('laporan.transaksi'); // -> admin.laporan.transaksi
